@@ -20,3 +20,4 @@ DEPENDENCIES
   mustache
   mysql
   rest-client
+  win32-process

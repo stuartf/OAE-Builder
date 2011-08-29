@@ -280,6 +280,11 @@ task :rebuild => [:config] do
   Dir.chdir ui["path"] do
     system("#{mvn_cmd} clean install")
   end
+  if db["driver"] == "mysql"
+    Dir.chdir "#{nakamura["path"]}/contrib/mysql-jdbc" do
+      system("#{mvn_cmd} clean install")
+    end
+  end
   for p in server do
     Dir.chdir p["path"] do
       system("#{mvn_cmd} clean install")
@@ -413,6 +418,24 @@ end
 
 desc "Configure nakamura"
 task :config do
+  if db["driver"] == "mysql"
+    lXML = ""
+    list = "#{nakamura["path"]}/app/src/main/bundles/list.xml"
+    File.open(list) do |f|
+      lXML = REXML::Document.new(f)
+      sl = REXML::XPath.first(lXML, "//startLevel[@level='1']")
+      bundle = sl.add_element("bundle")
+      bundle.add_element("groupId").text = "org.sakaiproject.nakamura"
+      bundle.add_element("artifactId").text = "org.sakaiproject.nakamura.mysqljdbc"
+      # TODO read this from the pom
+      bundle.add_element("version").text = "0.11-SNAPSHOT"
+    end
+
+    File.open(list, "w+") do |f|
+      lXML.write f
+    end
+  end
+
   FileUtils.mkdir_p("./sling/config/org/sakaiproject/nakamura/proxy")
   FileUtils.mkdir_p("./sling/config/org/sakaiproject/nakamura/http/usercontent")
   FileUtils.mkdir_p("./sling/config/org/sakaiproject/nakamura/lite/storage/jdbc")

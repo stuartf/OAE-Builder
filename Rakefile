@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'bundler/setup'
-Bundler.require(:default)
+Bundler.require(:default, :mswin, :mingw)
 require 'net/http'
 require 'uri'
 require './messaging'

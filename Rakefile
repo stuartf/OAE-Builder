@@ -11,6 +11,10 @@ require 'rexml/xpath'
 require 'zlib'
 require 'archive/tar/minitar'
 
+if RUBY_PLATFORM =~ /mswin|mingw/
+  include Process
+end
+
 # Make sure we always start from where the Rakefile is
 Dir.chdir(File.dirname(__FILE__))
 
